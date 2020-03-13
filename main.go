@@ -20,11 +20,15 @@ const (
 
 var (
 	//Sprites and stuff
-	player Sprite
+	player    Sprite
+	startGame Sprite
 
 	sprites []Sprite
 
 	gameState int
+
+	playerJumping bool
+	ableToJump    bool
 )
 
 func loadImageFile(filepath string) image.Image {
@@ -44,6 +48,10 @@ func loadImageFile(filepath string) image.Image {
 func loadImages() {
 
 	player.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/player.png"), ebiten.FilterDefault)
+
+	startGame.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/startgame.png"), ebiten.FilterDefault)
+	startGame.x = 375
+	startGame.y = 300
 
 	var tempSprite Sprite
 
@@ -66,10 +74,39 @@ func update(screen *ebiten.Image) error {
 		return nil
 	}
 
-	//Handle keyboard input
-	if ebiten.IsKeyPressed(ebiten.KeySpace) {
-		player.x += 3
+	if gameState != 0 {
+		//Handle keyboard input
+		if ebiten.IsKeyPressed(ebiten.KeySpace) {
+			log.Println("Jumping...")
+			if !playerJumping && ableToJump {
+				playerJumping = true
+				ableToJump = false
+			}
+
+		}
+
+		if playerJumping == true {
+
+			player.y -= player.dy
+
+			if player.y < 58 {
+				playerJumping = false
+			}
+
+		} else if player.y < 186 && playerJumping == false {
+			player.y += player.dy + 2
+			if player.y >= 186 {
+				ableToJump = true
+			}
+		}
+
 	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		os.Exit(1)
+	}
+
+	log.Println(player.y)
 
 	//We should only allow jumps and a different key to shapeshift
 
@@ -92,13 +129,19 @@ func update(screen *ebiten.Image) error {
 	//Check if we are colliding with stuff
 	//If we are dont apply vertical velocity
 
-	// Block drawing
+	// Block updating
 	for i, elem := range sprites {
-		sprites[i].x -= elem.dx
+		if gameState > 0 {
+			sprites[i].x -= elem.dx
+		}
+
+	}
+
+	//Block drawing
+	for _, elem := range sprites {
 		spriteOptions := &ebiten.DrawImageOptions{}
 		spriteOptions.GeoM.Translate(elem.x, elem.y)
 		screen.DrawImage(elem.Image, spriteOptions)
-
 	}
 
 	//Player image options
@@ -108,18 +151,31 @@ func update(screen *ebiten.Image) error {
 	//Draw the player
 	screen.DrawImage(player.Image, playerOptions)
 
+	if gameState == 0 {
+		if ebiten.IsKeyPressed(ebiten.KeyEnter) {
+			gameState = 1
+		}
+
+		StartGameOptions := &ebiten.DrawImageOptions{}
+		StartGameOptions.GeoM.Translate(startGame.x, startGame.y)
+		screen.DrawImage(startGame.Image, StartGameOptions)
+
+	}
+
 	return nil
 }
 
 func main() {
 	gameState = 0 //Press enter to start
 
+	ableToJump = true
+
 	loadImages()
 
 	player.x = 250
 	player.y = 186
 	player.dx = 3
-	player.dy = 10
+	player.dy = 7
 
 	if err := ebiten.Run(update, screenWidth, screenHeight, 1, "Game"); err != nil {
 		log.Fatal(err)
