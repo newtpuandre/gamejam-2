@@ -1,0 +1,4 @@
+Have som kind of symbol that represents a shapeshift. Triangle ?
+Make the triangle behave like flappybird.
+
+Add spikes n stuff
