@@ -26,6 +26,7 @@ func loadImages() {
 
 	player.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/player.png"), ebiten.FilterDefault)
 	player2.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_fly.png"), ebiten.FilterDefault)
+	portal.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/portal.png"),ebiten.FilterDefault)
 
 	startGame.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/startgame.png"), ebiten.FilterDefault)
 	startGame.x = 375
@@ -54,5 +55,10 @@ func loadImages() {
 		tempSpriteSpike.dx = 5
 		spikes = append(spikes, tempSpriteSpike)
 	}
+
+	portal.x = 1402
+	portal.y = 372
+	portal.dx = 5
+	blocks = append(blocks, portal)
 
 }

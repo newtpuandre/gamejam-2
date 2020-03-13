@@ -21,6 +21,7 @@ var (
 	//Sprites and stuff
 	player    Sprite
 	player2   Sprite
+	portal    Sprite
 	startGame Sprite
 
 	blocks []Sprite
