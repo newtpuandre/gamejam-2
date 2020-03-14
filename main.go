@@ -33,19 +33,24 @@ var (
 	spikes    []Sprite
 	portals   []Sprite
 
+	globaldx float64
+
 	gameState int
 
 	arcadeFont font.Face
 
-	playerJumping  bool
-	ableToJump     bool
-	score          float64
-	isFlying       bool
-	isFlyingJump   bool
+	playerJumping bool
+	ableToJump    bool
+	score         float64
+	isFlying      bool
+	isFlyingJump  bool
+
 	blockPortalCol bool
 
 	counter int
-	points  int64
+
+	points    int64
+	highscore int64
 
 	invulnerability bool
 	invulnCounter   int
@@ -69,6 +74,9 @@ func update(screen *ebiten.Image) error {
 		if invulnerability {
 			invulnCounter++
 		}
+
+		globaldx += 0.001
+		log.Println(globaldx)
 		//Handle keyboard input
 		if ebiten.IsKeyPressed(ebiten.KeySpace) {
 
@@ -101,9 +109,13 @@ func update(screen *ebiten.Image) error {
 
 		} else {
 			if !isFlyingJump {
-				player.y += player.dy
+				if player.y+BLOCK_SIZE < screenHeight {
+					player.y += player.dy
+				}
 			} else {
-				player.y -= player.dy
+				if player.y > 0 {
+					player.y -= player.dy
+				}
 			}
 		}
 
@@ -165,6 +177,7 @@ func update(screen *ebiten.Image) error {
 				isFlying = !isFlying
 				blockPortalCol = true
 				invulnerability = true
+				points += 100
 			}
 		}
 	}
@@ -175,10 +188,19 @@ func update(screen *ebiten.Image) error {
 
 	//Draw the player
 	if isFlying {
-		screen.DrawImage(player.SecondaryImage, playerOptions)
+		if invulnerability {
+			screen.DrawImage(player.SecondaryImageInvuln, playerOptions)
+		} else {
+
+			screen.DrawImage(player.SecondaryImage, playerOptions)
+		}
 
 	} else {
-		screen.DrawImage(player.Image, playerOptions)
+		if invulnerability {
+			screen.DrawImage(player.ImageInvuln, playerOptions)
+		} else {
+			screen.DrawImage(player.Image, playerOptions)
+		}
 	}
 
 	if gameState == 0 {
@@ -196,6 +218,11 @@ func update(screen *ebiten.Image) error {
 		scoreStr := fmt.Sprintf("You died. Total Points: %07d", points)
 		text.Draw(screen, scoreStr, arcadeFont, 145, 200, color.White)
 		text.Draw(screen, "Press 'ENTER' to play again.", arcadeFont, 155, 250, color.White)
+		if points > highscoreStruct.Highscore {
+
+			highscore = points
+		}
+		writeHighscore()
 		if ebiten.IsKeyPressed(ebiten.KeyEnter) {
 			blocks = make([]Sprite, 0)
 			spikes = make([]Sprite, 0)
@@ -215,6 +242,7 @@ func update(screen *ebiten.Image) error {
 			invulnerability = false
 			counter = 0
 			points = 0
+			globaldx = 5
 		}
 	}
 
@@ -230,12 +258,15 @@ func update(screen *ebiten.Image) error {
 	}
 
 	scoreStr := fmt.Sprintf("%07d", points)
+	highscoreStr := fmt.Sprintf("Highscore: %07d", highscore)
 	text.Draw(screen, scoreStr, arcadeFont, screenWidth-len(scoreStr)*32, 32, color.White)
+	text.Draw(screen, highscoreStr, arcadeFont, 0, 32, color.White)
 
 	return nil
 }
 
 func main() {
+	ConfigInit()
 	tt, err := truetype.Parse(fonts.ArcadeN_ttf)
 	if err != nil {
 		log.Fatal(err)
@@ -250,6 +281,7 @@ func main() {
 	ableToJump = true
 	blockPortalCol = false
 	invulnerability = false
+	//isFlying = true
 
 	loadImages()
 
@@ -257,6 +289,8 @@ func main() {
 	player.y = 436
 	player.dx = 3
 	player.dy = 8
+
+	globaldx = 5
 
 	if err := ebiten.Run(update, screenWidth, screenHeight, 1, "Game jam: Shapeshifting game"); err != nil {
 		log.Fatal(err)

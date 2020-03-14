@@ -26,7 +26,9 @@ func loadImageFile(filepath string) image.Image {
 func loadImages() {
 
 	player.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/player.png"), ebiten.FilterDefault)
+	player.ImageInvuln, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_invuln.png"), ebiten.FilterDefault)
 	player.SecondaryImage, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_fly.png"), ebiten.FilterDefault)
+	player.SecondaryImageInvuln, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_fly_invuln.png"), ebiten.FilterDefault)
 
 	startGame.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/startgame.png"), ebiten.FilterDefault)
 	startGame.x = 375
@@ -57,7 +59,7 @@ func loadImages() {
 	var tempSpriteSpike Sprite
 
 	tempSpriteSpike.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/spikes.png"), ebiten.FilterDefault)
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 100; i++ {
 		tempSpriteSpike.x = 442 + float64((BLOCK_SIZE*i)*6)
 
 		tempSpriteSpike.y = 436
@@ -68,7 +70,7 @@ func loadImages() {
 	var tempSpritePortal Sprite
 	tempSpritePortal.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/portal.png"), ebiten.FilterDefault)
 	tempSpritePortal.SecondaryImage, _ = ebiten.NewImageFromImage(loadImageFile("./images/portal_2.png"), ebiten.FilterDefault)
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 20; i++ {
 		tempSpritePortal.x = float64(1402 * (4 + i))
 		tempSpritePortal.y = 308
 		tempSpritePortal.dx = 5

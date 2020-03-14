@@ -3,12 +3,14 @@ package main
 import "github.com/hajimehoshi/ebiten"
 
 type Sprite struct {
-	x              float64
-	y              float64
-	dx             float64
-	dy             float64
-	Image          *ebiten.Image
-	SecondaryImage *ebiten.Image
+	x                    float64
+	y                    float64
+	dx                   float64
+	dy                   float64
+	Image                *ebiten.Image
+	ImageInvuln          *ebiten.Image
+	SecondaryImage       *ebiten.Image
+	SecondaryImageInvuln *ebiten.Image
 }
 
 func doColide(s1 Sprite, s2 Sprite) bool {
@@ -56,9 +58,9 @@ func blockMove(s []Sprite) {
 }
 
 func updateMovement(s []Sprite) {
-	for i, elem := range s {
+	for i := range s {
 		if gameState > 0 {
-			s[i].x -= elem.dx
+			s[i].x -= globaldx
 		}
 	}
 }

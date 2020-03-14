@@ -1,4 +1,2 @@
-Have som kind of symbol that represents a shapeshift. Triangle ?
-Make the triangle behave like flappybird.
+Highscore
 
-Add spikes n stuff
