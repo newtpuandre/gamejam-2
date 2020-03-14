@@ -74,3 +74,18 @@ func drawSprites(screen *ebiten.Image, s []Sprite) {
 	}
 
 }
+
+func drawPortalSprites(screen *ebiten.Image, s []Sprite) {
+
+	for _, elem := range s {
+		if elem.x > -BLOCK_SIZE && elem.x < screenWidth {
+			spriteOptions := &ebiten.DrawImageOptions{}
+			spriteOptions.GeoM.Translate(elem.x, elem.y)
+			if isFlying {
+				screen.DrawImage(elem.SecondaryImage, spriteOptions)
+			} else {
+				screen.DrawImage(elem.Image, spriteOptions)
+			}
+		}
+	}
+}

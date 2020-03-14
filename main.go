@@ -58,7 +58,7 @@ func update(screen *ebiten.Image) error {
 		isFlyingJump = false
 	}
 
-	if gameState != 0 {
+	if gameState == 1 {
 		points++
 		if blockPortalCol {
 			counter++
@@ -107,31 +107,44 @@ func update(screen *ebiten.Image) error {
 		os.Exit(1)
 	}
 
-	updateMovement(blocks)
-	updateMovement(spikes)
-	updateMovement(portals)
-	updateMovement(flyBlocks)
+	if gameState == 1 {
 
-	blockMove(blocks)
-	blockMove(flyBlocks)
+		updateMovement(blocks)
+		updateMovement(spikes)
+		updateMovement(portals)
+		updateMovement(flyBlocks)
+
+		blockMove(blocks)
+		blockMove(flyBlocks)
+	}
 
 	if !isFlying {
 
 		drawSprites(screen, blocks)
 		drawSprites(screen, spikes)
+
+		for _, elem := range spikes {
+
+			if doColide(player, elem) {
+				log.Println("We are colliding", player.x, elem.x)
+				gameState = 2
+			}
+
+		}
 	} else {
 
 		drawSprites(screen, flyBlocks)
-	}
-	drawSprites(screen, portals)
 
-	for _, elem := range spikes {
+		for _, elem := range flyBlocks {
 
-		if doColide(player, elem) {
-			log.Println("We are colliding", player.x, elem.x)
+			if doColide(player, elem) {
+				log.Println("We are colliding", player.x, elem.x)
+				gameState = 2
+			}
+
 		}
-
 	}
+	drawPortalSprites(screen, portals)
 
 	if !blockPortalCol {
 		for _, elem := range portals {
@@ -166,13 +179,19 @@ func update(screen *ebiten.Image) error {
 
 	}
 
+	if gameState == 2 {
+		scoreStr := fmt.Sprintf("You died. Total Points: %07d", points)
+		text.Draw(screen, scoreStr, arcadeFont, 145, 200, color.White)
+		text.Draw(screen, "Press 'ENTER' to play again.", arcadeFont, 155, 250, color.White)
+	}
+
 	//Reset blockPortalCol
 	if blockPortalCol && counter > 100 {
 		blockPortalCol = false
 		counter = 0
 	}
 
-	scoreStr := fmt.Sprintf("%04d", points)
+	scoreStr := fmt.Sprintf("%07d", points)
 	text.Draw(screen, scoreStr, arcadeFont, screenWidth-len(scoreStr)*32, 32, color.White)
 
 	return nil

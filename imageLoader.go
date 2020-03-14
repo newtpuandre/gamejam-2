@@ -67,15 +67,12 @@ func loadImages() {
 
 	var tempSpritePortal Sprite
 	tempSpritePortal.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/portal.png"), ebiten.FilterDefault)
+	tempSpritePortal.SecondaryImage, _ = ebiten.NewImageFromImage(loadImageFile("./images/portal_2.png"), ebiten.FilterDefault)
+	for i := 0; i < 5; i++ {
+		tempSpritePortal.x = float64(1402 * (4 + i))
+		tempSpritePortal.y = 308
+		tempSpritePortal.dx = 5
+		portals = append(portals, tempSpritePortal)
+	}
 
-	tempSpritePortal.x = 1402
-	tempSpritePortal.y = 308
-	tempSpritePortal.dx = 5
-	portals = append(portals, tempSpritePortal)
-	tempSpritePortal.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/portal.png"), ebiten.FilterDefault)
-
-	tempSpritePortal.x = 1402 * 6
-	tempSpritePortal.y = 308
-	tempSpritePortal.dx = 5
-	portals = append(portals, tempSpritePortal)
 }
