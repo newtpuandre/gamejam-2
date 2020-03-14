@@ -25,10 +25,12 @@ func loadImageFile(filepath string) image.Image {
 
 func loadImages() {
 
-	player.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/player.png"), ebiten.FilterDefault)
-	player.ImageInvuln, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_invuln.png"), ebiten.FilterDefault)
-	player.SecondaryImage, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_fly.png"), ebiten.FilterDefault)
-	player.SecondaryImageInvuln, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_fly_invuln.png"), ebiten.FilterDefault)
+	player.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_2.png"), ebiten.FilterDefault)
+	player.ImageInvuln, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_2_invuln.png"), ebiten.FilterDefault)
+	player.SecondaryImage, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_2_fly.png"), ebiten.FilterDefault)
+	player.SecondaryImageInvuln, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_2_fly_invuln.png"), ebiten.FilterDefault)
+	player.ImageDeadFly, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_2_fly_dead.png"), ebiten.FilterDefault)
+	player.ImageDead, _ = ebiten.NewImageFromImage(loadImageFile("./images/player_2_dead.png"), ebiten.FilterDefault)
 
 	startGame.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/startgame.png"), ebiten.FilterDefault)
 	startGame.x = 375
@@ -37,6 +39,9 @@ func loadImages() {
 	var tempSprite Sprite
 
 	tempSprite.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/block1.png"), ebiten.FilterDefault)
+	tempSprite.ImageVariation2, _ = ebiten.NewImageFromImage(loadImageFile("./images/block2.png"), ebiten.FilterDefault)
+	tempSprite.ImageVariation3, _ = ebiten.NewImageFromImage(loadImageFile("./images/block3.png"), ebiten.FilterDefault)
+	tempSprite.ImageVariation4, _ = ebiten.NewImageFromImage(loadImageFile("./images/block4.png"), ebiten.FilterDefault)
 
 	//Add lots of blocks
 	for i := 0; i < 22; i++ {

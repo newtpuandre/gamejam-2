@@ -3,14 +3,24 @@ package main
 import "github.com/hajimehoshi/ebiten"
 
 type Sprite struct {
-	x                    float64
-	y                    float64
-	dx                   float64
-	dy                   float64
-	Image                *ebiten.Image
+	x     float64
+	y     float64
+	dx    float64
+	dy    float64
+	Image *ebiten.Image
+
+	//Used for players
 	ImageInvuln          *ebiten.Image
 	SecondaryImage       *ebiten.Image
 	SecondaryImageInvuln *ebiten.Image
+
+	ImageDead    *ebiten.Image
+	ImageDeadFly *ebiten.Image
+
+	//Used for blocks
+	ImageVariation2 *ebiten.Image
+	ImageVariation3 *ebiten.Image
+	ImageVariation4 *ebiten.Image
 }
 
 func doColide(s1 Sprite, s2 Sprite) bool {
@@ -77,6 +87,33 @@ func drawSprites(screen *ebiten.Image, s []Sprite) {
 
 }
 
+func drawBlockSprites(screen *ebiten.Image, s []Sprite) {
+
+	for _, elem := range s {
+		if elem.x > -BLOCK_SIZE && elem.x < screenWidth {
+			spriteOptions := &ebiten.DrawImageOptions{}
+			spriteOptions.GeoM.Translate(elem.x, elem.y)
+
+			switch blockColor {
+			case 0:
+				screen.DrawImage(elem.Image, spriteOptions)
+				break
+			case 1:
+				screen.DrawImage(elem.ImageVariation2, spriteOptions)
+				break
+			case 2:
+				screen.DrawImage(elem.ImageVariation3, spriteOptions)
+				break
+			case 3:
+				screen.DrawImage(elem.ImageVariation4, spriteOptions)
+				break
+			}
+
+			//screen.DrawImage(elem.Image, spriteOptions)
+		}
+	}
+
+}
 func drawPortalSprites(screen *ebiten.Image, s []Sprite) {
 
 	for _, elem := range s {

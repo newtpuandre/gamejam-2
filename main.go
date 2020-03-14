@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 
 	"image/color"
@@ -28,10 +29,13 @@ var (
 	player    Sprite
 	startGame Sprite
 
+	blockColor int
+
 	blocks    []Sprite
 	flyBlocks []Sprite
 	spikes    []Sprite
 	portals   []Sprite
+	starts    []Sprite
 
 	globaldx float64
 
@@ -76,7 +80,6 @@ func update(screen *ebiten.Image) error {
 		}
 
 		globaldx += 0.001
-		log.Println(globaldx)
 		//Handle keyboard input
 		if ebiten.IsKeyPressed(ebiten.KeySpace) {
 
@@ -137,13 +140,12 @@ func update(screen *ebiten.Image) error {
 			updateMovement(spikes)
 			blockMove(blocks)
 		}
-		drawSprites(screen, blocks)
+		drawBlockSprites(screen, blocks)
 		drawSprites(screen, spikes)
 		if !invulnerability {
 			for _, elem := range spikes {
 
 				if doColide(player, elem) {
-					log.Println("We are colliding", player.x, elem.x)
 					gameState = 2
 				}
 
@@ -155,13 +157,12 @@ func update(screen *ebiten.Image) error {
 
 			blockMove(flyBlocks)
 		}
-		drawSprites(screen, flyBlocks)
+		drawBlockSprites(screen, flyBlocks)
 		if !invulnerability {
 
 			for _, elem := range flyBlocks {
 
 				if doColide(player, elem) {
-					log.Println("We are colliding", player.x, elem.x)
 					gameState = 2
 				}
 
@@ -177,6 +178,8 @@ func update(screen *ebiten.Image) error {
 				isFlying = !isFlying
 				blockPortalCol = true
 				invulnerability = true
+				blockColor = rand.Intn(4)
+				log.Println("blockColor", blockColor)
 				points += 100
 			}
 		}
@@ -190,14 +193,17 @@ func update(screen *ebiten.Image) error {
 	if isFlying {
 		if invulnerability {
 			screen.DrawImage(player.SecondaryImageInvuln, playerOptions)
+		} else if gameState == 2 {
+			screen.DrawImage(player.ImageDeadFly, playerOptions)
 		} else {
-
 			screen.DrawImage(player.SecondaryImage, playerOptions)
 		}
 
 	} else {
 		if invulnerability {
 			screen.DrawImage(player.ImageInvuln, playerOptions)
+		} else if gameState == 2 {
+			screen.DrawImage(player.ImageDead, playerOptions)
 		} else {
 			screen.DrawImage(player.Image, playerOptions)
 		}
@@ -243,6 +249,7 @@ func update(screen *ebiten.Image) error {
 			counter = 0
 			points = 0
 			globaldx = 5
+			blockColor = 0
 		}
 	}
 
@@ -291,6 +298,8 @@ func main() {
 	player.dy = 8
 
 	globaldx = 5
+
+	blockColor = 0
 
 	if err := ebiten.Run(update, screenWidth, screenHeight, 1, "Game jam: Shapeshifting game"); err != nil {
 		log.Fatal(err)
