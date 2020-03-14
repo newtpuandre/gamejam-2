@@ -3,11 +3,12 @@ package main
 import "github.com/hajimehoshi/ebiten"
 
 type Sprite struct {
-	x     float64
-	y     float64
-	dx    float64
-	dy    float64
-	Image *ebiten.Image
+	x              float64
+	y              float64
+	dx             float64
+	dy             float64
+	Image          *ebiten.Image
+	SecondaryImage *ebiten.Image
 }
 
 func doColide(s1 Sprite, s2 Sprite) bool {
