@@ -46,6 +46,9 @@ var (
 
 	counter int
 	points  int64
+
+	invulnerability bool
+	invulnCounter   int
 )
 
 func update(screen *ebiten.Image) error {
@@ -62,6 +65,9 @@ func update(screen *ebiten.Image) error {
 		points++
 		if blockPortalCol {
 			counter++
+		}
+		if invulnerability {
+			invulnCounter++
 		}
 		//Handle keyboard input
 		if ebiten.IsKeyPressed(ebiten.KeySpace) {
@@ -109,39 +115,45 @@ func update(screen *ebiten.Image) error {
 
 	if gameState == 1 {
 
-		updateMovement(blocks)
-		updateMovement(spikes)
 		updateMovement(portals)
-		updateMovement(flyBlocks)
 
-		blockMove(blocks)
-		blockMove(flyBlocks)
 	}
 
 	if !isFlying {
-
+		if gameState == 1 {
+			updateMovement(blocks)
+			updateMovement(spikes)
+			blockMove(blocks)
+		}
 		drawSprites(screen, blocks)
 		drawSprites(screen, spikes)
+		if !invulnerability {
+			for _, elem := range spikes {
 
-		for _, elem := range spikes {
+				if doColide(player, elem) {
+					log.Println("We are colliding", player.x, elem.x)
+					gameState = 2
+				}
 
-			if doColide(player, elem) {
-				log.Println("We are colliding", player.x, elem.x)
-				gameState = 2
 			}
-
 		}
 	} else {
+		if gameState == 1 {
+			updateMovement(flyBlocks)
 
+			blockMove(flyBlocks)
+		}
 		drawSprites(screen, flyBlocks)
+		if !invulnerability {
 
-		for _, elem := range flyBlocks {
+			for _, elem := range flyBlocks {
 
-			if doColide(player, elem) {
-				log.Println("We are colliding", player.x, elem.x)
-				gameState = 2
+				if doColide(player, elem) {
+					log.Println("We are colliding", player.x, elem.x)
+					gameState = 2
+				}
+
 			}
-
 		}
 	}
 	drawPortalSprites(screen, portals)
@@ -152,6 +164,7 @@ func update(screen *ebiten.Image) error {
 				log.Println("ShapeSHIFT")
 				isFlying = !isFlying
 				blockPortalCol = true
+				invulnerability = true
 			}
 		}
 	}
@@ -183,12 +196,37 @@ func update(screen *ebiten.Image) error {
 		scoreStr := fmt.Sprintf("You died. Total Points: %07d", points)
 		text.Draw(screen, scoreStr, arcadeFont, 145, 200, color.White)
 		text.Draw(screen, "Press 'ENTER' to play again.", arcadeFont, 155, 250, color.White)
+		if ebiten.IsKeyPressed(ebiten.KeyEnter) {
+			blocks = make([]Sprite, 0)
+			spikes = make([]Sprite, 0)
+			flyBlocks = make([]Sprite, 0)
+			portals = make([]Sprite, 0)
+			loadImages()
+			player.x = 250
+			player.y = 436
+			player.dx = 3
+			player.dy = 8
+			gameState = 0
+			ableToJump = true
+			blockPortalCol = false
+			isFlying = false
+			isFlyingJump = false
+			playerJumping = false
+			invulnerability = false
+			counter = 0
+			points = 0
+		}
 	}
 
 	//Reset blockPortalCol
 	if blockPortalCol && counter > 100 {
 		blockPortalCol = false
 		counter = 0
+	}
+
+	if invulnerability && invulnCounter > 100 {
+		invulnerability = false
+		invulnCounter = 0
 	}
 
 	scoreStr := fmt.Sprintf("%07d", points)
@@ -211,6 +249,7 @@ func main() {
 
 	ableToJump = true
 	blockPortalCol = false
+	invulnerability = false
 
 	loadImages()
 
