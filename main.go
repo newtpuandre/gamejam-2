@@ -71,31 +71,11 @@ func update(screen *ebiten.Image) error {
 		os.Exit(1)
 	}
 
-	// Blocks
-	for i, elem := range blocks {
-		if gameState > 0 {
-			blocks[i].x -= elem.dx
-		}
-	}
+	updateMovement(blocks)
+	updateMovement(spikes)
 
-	for _, elem := range blocks {
-		spriteOptions := &ebiten.DrawImageOptions{}
-		spriteOptions.GeoM.Translate(elem.x, elem.y)
-		screen.DrawImage(elem.Image, spriteOptions)
-	}
-
-	//Spikes
-	for i, elem := range spikes {
-		if gameState > 0 {
-			spikes[i].x -= elem.dx
-		}
-	}
-
-	for _, elem := range spikes {
-		spriteOptions := &ebiten.DrawImageOptions{}
-		spriteOptions.GeoM.Translate(elem.x, elem.y)
-		screen.DrawImage(elem.Image, spriteOptions)
-	}
+	drawSprites(screen, blocks)
+	drawSprites(screen, spikes)
 
 	for _, elem := range spikes {
 
@@ -124,6 +104,26 @@ func update(screen *ebiten.Image) error {
 	}
 
 	return nil
+}
+
+func drawSprites(screen *ebiten.Image, s []Sprite) {
+
+	for _, elem := range s {
+		if elem.x > -64 && elem.x < screenWidth {
+			spriteOptions := &ebiten.DrawImageOptions{}
+			spriteOptions.GeoM.Translate(elem.x, elem.y)
+			screen.DrawImage(elem.Image, spriteOptions)
+		}
+	}
+
+}
+
+func updateMovement(s []Sprite) {
+	for i, elem := range s {
+		if gameState > 0 {
+			s[i].x -= elem.dx
+		}
+	}
 }
 
 func main() {
