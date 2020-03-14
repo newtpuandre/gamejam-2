@@ -35,7 +35,8 @@ var (
 	flyBlocks []Sprite
 	spikes    []Sprite
 	portals   []Sprite
-	starts    []Sprite
+	stars     []Sprite
+	flyStars  []Sprite
 
 	globaldx float64
 
@@ -58,6 +59,9 @@ var (
 
 	invulnerability bool
 	invulnCounter   int
+
+	blockStarCol     bool
+	blockStarCounter int
 )
 
 func update(screen *ebiten.Image) error {
@@ -77,6 +81,10 @@ func update(screen *ebiten.Image) error {
 		}
 		if invulnerability {
 			invulnCounter++
+		}
+
+		if blockStarCol {
+			blockStarCounter++
 		}
 
 		globaldx += 0.001
@@ -138,10 +146,12 @@ func update(screen *ebiten.Image) error {
 		if gameState == 1 {
 			updateMovement(blocks)
 			updateMovement(spikes)
+			updateMovement(stars)
 			blockMove(blocks)
 		}
 		drawBlockSprites(screen, blocks)
 		drawSprites(screen, spikes)
+		drawStarSprites(screen, stars)
 		if !invulnerability {
 			for _, elem := range spikes {
 
@@ -151,12 +161,27 @@ func update(screen *ebiten.Image) error {
 
 			}
 		}
+
+		for i, elem := range stars {
+
+			if !blockStarCol {
+				if doColide(player, elem) {
+					blockStarCol = true
+					points += 250
+					stars[i].draw = false
+				}
+
+			}
+		}
 	} else {
 		if gameState == 1 {
+			updateMovement(flyStars)
 			updateMovement(flyBlocks)
 
 			blockMove(flyBlocks)
+
 		}
+		drawStarSprites(screen, flyStars)
 		drawBlockSprites(screen, flyBlocks)
 		if !invulnerability {
 
@@ -164,6 +189,17 @@ func update(screen *ebiten.Image) error {
 
 				if doColide(player, elem) {
 					gameState = 2
+				}
+
+			}
+		}
+		for i, elem := range flyStars {
+
+			if !blockStarCol {
+				if doColide(player, elem) {
+					blockStarCol = true
+					points += 250
+					flyStars[i].draw = false
 				}
 
 			}
@@ -234,6 +270,7 @@ func update(screen *ebiten.Image) error {
 			spikes = make([]Sprite, 0)
 			flyBlocks = make([]Sprite, 0)
 			portals = make([]Sprite, 0)
+			stars = make([]Sprite, 0)
 			loadImages()
 			player.x = 250
 			player.y = 436
@@ -262,6 +299,11 @@ func update(screen *ebiten.Image) error {
 	if invulnerability && invulnCounter > 100 {
 		invulnerability = false
 		invulnCounter = 0
+	}
+
+	if blockStarCol && blockStarCounter > 100 {
+		blockStarCol = false
+		blockStarCounter = 0
 	}
 
 	scoreStr := fmt.Sprintf("%07d", points)

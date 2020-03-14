@@ -49,6 +49,7 @@ func loadImages() {
 		tempSprite.y = 500
 		tempSprite.dx = 5
 		tempSprite.dy = 0
+		tempSprite.draw = true
 		blocks = append(blocks, tempSprite)
 	}
 
@@ -58,6 +59,7 @@ func loadImages() {
 		tempSprite.y = 200 * float64(rand.Intn(4))
 		tempSprite.dx = 5
 		tempSprite.dy = 0
+		tempSprite.draw = true
 		flyBlocks = append(flyBlocks, tempSprite)
 	}
 
@@ -69,6 +71,7 @@ func loadImages() {
 
 		tempSpriteSpike.y = 436
 		tempSpriteSpike.dx = 5
+		tempSpriteSpike.draw = true
 		spikes = append(spikes, tempSpriteSpike)
 	}
 
@@ -79,7 +82,26 @@ func loadImages() {
 		tempSpritePortal.x = float64(1402 * (4 + i))
 		tempSpritePortal.y = 308
 		tempSpritePortal.dx = 5
+		tempSpritePortal.draw = true
 		portals = append(portals, tempSpritePortal)
+	}
+
+	var tempSpriteStar Sprite
+	tempSpriteStar.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/star.png"), ebiten.FilterDefault)
+	for i := 0; i < 20; i++ {
+		tempSpriteStar.x = 1280 * float64((2 * i))
+		tempSpriteStar.y = 436
+		tempSpriteStar.dx = 5
+		tempSpriteStar.draw = true
+		stars = append(stars, tempSpriteStar)
+	}
+
+	for i := 0; i < 22; i++ {
+		tempSpriteStar.x = 1280 * float64((2 * i))
+		tempSpriteStar.y = 200 * float64(rand.Intn(4))
+		tempSpriteStar.dx = 5
+		tempSpriteStar.draw = true
+		flyStars = append(flyStars, tempSpriteStar)
 	}
 
 }

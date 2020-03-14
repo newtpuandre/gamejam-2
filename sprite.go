@@ -1,6 +1,8 @@
 package main
 
-import "github.com/hajimehoshi/ebiten"
+import (
+	"github.com/hajimehoshi/ebiten"
+)
 
 type Sprite struct {
 	x     float64
@@ -21,6 +23,8 @@ type Sprite struct {
 	ImageVariation2 *ebiten.Image
 	ImageVariation3 *ebiten.Image
 	ImageVariation4 *ebiten.Image
+
+	draw bool
 }
 
 func doColide(s1 Sprite, s2 Sprite) bool {
@@ -85,6 +89,20 @@ func drawSprites(screen *ebiten.Image, s []Sprite) {
 		}
 	}
 
+}
+
+func drawStarSprites(screen *ebiten.Image, s []Sprite) {
+	for i, elem := range s {
+		if !s[i].draw {
+			continue
+		}
+
+		if elem.x > -BLOCK_SIZE && elem.x < screenWidth {
+			spriteOptions := &ebiten.DrawImageOptions{}
+			spriteOptions.GeoM.Translate(elem.x, elem.y)
+			screen.DrawImage(elem.Image, spriteOptions)
+		}
+	}
 }
 
 func drawBlockSprites(screen *ebiten.Image, s []Sprite) {
