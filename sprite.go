@@ -17,13 +17,13 @@ func doColide(s1 Sprite, s2 Sprite) bool {
 	// Y + BLOCK_SIZE is bottom left.
 	// Bottom right is Y + ( top left - top right)
 
-	s1lx := s1.x                 //Top left
+	/*s1lx := s1.x                 //Top left
 	s1ly := s1.y + BLOCK_SIZE    //Bottom left
 	s1rx := s1.x + BLOCK_SIZE    // Top Right
 	s1ry := s1.y + (s1lx - s1ly) // Bottom right
 
 	s2lx := s2.x                 //Top left
-	s2ly := s2.y                 //Bottom left
+	s2ly := s2.y + BLOCK_SIZE    //Bottom left
 	s2rx := s2.x + BLOCK_SIZE    // Top Right
 	s2ry := s2.y + (s2lx - s2ly) // Bottom right
 
@@ -35,6 +35,41 @@ func doColide(s1 Sprite, s2 Sprite) bool {
 		return false
 	}
 
-	return true
+	return true*/
+
+	if (s1.x-s2.x < 64 && s2.x-s1.x < 64) && (s1.y-s2.y < 64 && s2.y-s1.y < 64) {
+		return true
+	}
+
+	return false
+
+}
+
+// Moves the blocks that are out of screen behind the user to the front.
+func blockMove(s []Sprite) {
+	for i, elem := range s {
+		if elem.x < -BLOCK_SIZE {
+			s[i].x = screenWidth + BLOCK_SIZE
+		}
+	}
+}
+
+func updateMovement(s []Sprite) {
+	for i, elem := range s {
+		if gameState > 0 {
+			s[i].x -= elem.dx
+		}
+	}
+}
+
+func drawSprites(screen *ebiten.Image, s []Sprite) {
+
+	for _, elem := range s {
+		if elem.x > -BLOCK_SIZE && elem.x < screenWidth {
+			spriteOptions := &ebiten.DrawImageOptions{}
+			spriteOptions.GeoM.Translate(elem.x, elem.y)
+			screen.DrawImage(elem.Image, spriteOptions)
+		}
+	}
 
 }

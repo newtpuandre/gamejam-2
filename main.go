@@ -21,11 +21,11 @@ var (
 	//Sprites and stuff
 	player    Sprite
 	player2   Sprite
-	portal    Sprite
 	startGame Sprite
 
-	blocks []Sprite
-	spikes []Sprite
+	blocks  []Sprite
+	spikes  []Sprite
+	portals []Sprite
 
 	gameState int
 
@@ -54,7 +54,7 @@ func update(screen *ebiten.Image) error {
 
 			player.y -= player.dy
 
-			if player.y < 285 {
+			if player.y < 244 {
 				playerJumping = false
 			}
 
@@ -73,16 +73,26 @@ func update(screen *ebiten.Image) error {
 
 	updateMovement(blocks)
 	updateMovement(spikes)
+	updateMovement(portals)
+
+	blockMove(blocks)
 
 	drawSprites(screen, blocks)
 	drawSprites(screen, spikes)
+	drawSprites(screen, portals)
 
 	for _, elem := range spikes {
 
 		if doColide(player, elem) {
-			log.Println("test")
+			log.Println("We are colliding", player.x, elem.x)
 		}
 
+	}
+
+	for _, elem := range portals {
+		if doColide(player, elem) {
+			log.Println("ShapeSHIFT")
+		}
 	}
 
 	//Player image options
@@ -104,26 +114,6 @@ func update(screen *ebiten.Image) error {
 	}
 
 	return nil
-}
-
-func drawSprites(screen *ebiten.Image, s []Sprite) {
-
-	for _, elem := range s {
-		if elem.x > -64 && elem.x < screenWidth {
-			spriteOptions := &ebiten.DrawImageOptions{}
-			spriteOptions.GeoM.Translate(elem.x, elem.y)
-			screen.DrawImage(elem.Image, spriteOptions)
-		}
-	}
-
-}
-
-func updateMovement(s []Sprite) {
-	for i, elem := range s {
-		if gameState > 0 {
-			s[i].x -= elem.dx
-		}
-	}
 }
 
 func main() {
