@@ -89,7 +89,7 @@ func loadImages() {
 	var tempSpriteStar Sprite
 	tempSpriteStar.Image, _ = ebiten.NewImageFromImage(loadImageFile("./images/star.png"), ebiten.FilterDefault)
 	for i := 0; i < 20; i++ {
-		tempSpriteStar.x = 1280 * float64((2 * i))
+		tempSpriteStar.x = 384 + 1280*float64((2*i))
 		tempSpriteStar.y = 436
 		tempSpriteStar.dx = 5
 		tempSpriteStar.draw = true
@@ -97,7 +97,7 @@ func loadImages() {
 	}
 
 	for i := 0; i < 22; i++ {
-		tempSpriteStar.x = 1280 * float64((2 * i))
+		tempSpriteStar.x = 384 + 1280*float64((2*i))
 		tempSpriteStar.y = 200 * float64(rand.Intn(4))
 		tempSpriteStar.dx = 5
 		tempSpriteStar.draw = true
