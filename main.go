@@ -20,6 +20,8 @@ const (
 	screenWidth  = 1280
 	screenHeight = 720
 
+	fullScreen = false
+
 	//Block and player size
 	BLOCK_SIZE = 64
 )
@@ -268,7 +270,7 @@ func update(screen *ebiten.Image) error {
 
 		StartGameOptions := &ebiten.DrawImageOptions{}
 		StartGameOptions.GeoM.Translate(startGame.x, startGame.y)
-		text.Draw(screen, "Welcome to somegame", arcadeFont, 155, 250, color.White)
+		text.Draw(screen, "Welcome to SHAPE'n'Shift", arcadeFont, 155, 250, color.White)
 		text.Draw(screen, "Controls:", arcadeFont, 155, 282, color.White)
 		text.Draw(screen, "'Space': Jump", arcadeFont, 155, 314, color.White)
 		text.Draw(screen, "Press 'ENTER' to start the game", arcadeFont, 155, 346, color.White)
@@ -375,6 +377,7 @@ func main() {
 
 	blockColor = 0
 
+	ebiten.SetFullscreen(fullScreen)
 	ebiten.SetVsyncEnabled(true)
 
 	if err := ebiten.Run(update, screenWidth, screenHeight, 1, "Game jam: Shapeshifting game"); err != nil {
