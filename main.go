@@ -62,6 +62,10 @@ var (
 
 	blockStarCol     bool
 	blockStarCounter int
+
+	inAirCounter int
+
+	hardmode bool
 )
 
 func update(screen *ebiten.Image) error {
@@ -87,7 +91,11 @@ func update(screen *ebiten.Image) error {
 			blockStarCounter++
 		}
 
-		globaldx += 0.001
+		//Increment game speed
+		if hardmode {
+			globaldx += 0.002
+		}
+
 		//Handle keyboard input
 		if ebiten.IsKeyPressed(ebiten.KeySpace) {
 
@@ -104,6 +112,7 @@ func update(screen *ebiten.Image) error {
 
 		if !isFlying {
 			if playerJumping {
+				inAirCounter++
 
 				player.y -= player.dy
 
@@ -112,9 +121,13 @@ func update(screen *ebiten.Image) error {
 				}
 
 			} else if player.y < 436 && playerJumping == false {
-				player.y += player.dy - 1
+				inAirCounter++
+				if inAirCounter > 30 {
+					player.y += player.dy - 1
+				}
 				if player.y >= 436 {
 					ableToJump = true
+					inAirCounter = 0
 				}
 			}
 
@@ -210,12 +223,10 @@ func update(screen *ebiten.Image) error {
 	if !blockPortalCol {
 		for _, elem := range portals {
 			if doColide(player, elem) {
-				log.Println("ShapeSHIFT")
 				isFlying = !isFlying
 				blockPortalCol = true
 				invulnerability = true
 				blockColor = rand.Intn(4)
-				log.Println("blockColor", blockColor)
 				points += 100
 			}
 		}
@@ -250,43 +261,38 @@ func update(screen *ebiten.Image) error {
 			gameState = 1
 		}
 
+		if ebiten.IsKeyPressed(ebiten.KeyShift) {
+			hardmode = true
+			gameState = 1
+		}
+
 		StartGameOptions := &ebiten.DrawImageOptions{}
 		StartGameOptions.GeoM.Translate(startGame.x, startGame.y)
-		screen.DrawImage(startGame.Image, StartGameOptions)
+		text.Draw(screen, "Welcome to somegame", arcadeFont, 155, 250, color.White)
+		text.Draw(screen, "Controls:", arcadeFont, 155, 282, color.White)
+		text.Draw(screen, "'Space': Jump", arcadeFont, 155, 314, color.White)
+		text.Draw(screen, "Press 'ENTER' to start the game", arcadeFont, 155, 346, color.White)
+		text.Draw(screen, "Press 'SHIFT' to start hardmode", arcadeFont, 155, 378, color.White)
 
 	}
 
 	if gameState == 2 {
 		scoreStr := fmt.Sprintf("You died. Total Points: %07d", points)
 		text.Draw(screen, scoreStr, arcadeFont, 145, 200, color.White)
-		text.Draw(screen, "Press 'ENTER' to play again.", arcadeFont, 155, 250, color.White)
+		text.Draw(screen, "Press 'ENTER' to play again.", arcadeFont, 130, 250, color.White)
+		text.Draw(screen, "Press 'SHIFT' to play again in hardmode.", arcadeFont, 45, 282, color.White)
 		if points > highscoreStruct.Highscore {
 
 			highscore = points
 		}
 		writeHighscore()
 		if ebiten.IsKeyPressed(ebiten.KeyEnter) {
-			blocks = make([]Sprite, 0)
-			spikes = make([]Sprite, 0)
-			flyBlocks = make([]Sprite, 0)
-			portals = make([]Sprite, 0)
-			stars = make([]Sprite, 0)
-			loadImages()
-			player.x = 250
-			player.y = 436
-			player.dx = 3
-			player.dy = 8
-			ableToJump = true
-			blockPortalCol = false
-			isFlying = false
-			isFlyingJump = false
-			playerJumping = false
-			invulnerability = false
-			counter = 0
-			points = 0
-			globaldx = 5
-			blockColor = 0
-			gameState = 0
+			hardmode = false
+			restartGame()
+		}
+		if ebiten.IsKeyPressed(ebiten.KeyShift) {
+			hardmode = true
+			restartGame()
 		}
 	}
 
@@ -312,6 +318,32 @@ func update(screen *ebiten.Image) error {
 	text.Draw(screen, highscoreStr, arcadeFont, 0, 32, color.White)
 
 	return nil
+}
+
+func restartGame() {
+	blocks = make([]Sprite, 0)
+	spikes = make([]Sprite, 0)
+	flyBlocks = make([]Sprite, 0)
+	portals = make([]Sprite, 0)
+	stars = make([]Sprite, 0)
+	flyStars = make([]Sprite, 0)
+	loadImages()
+	player.x = 250
+	player.y = 436
+	player.dx = 3
+	player.dy = 8
+	ableToJump = true
+	blockPortalCol = false
+	isFlying = false
+	isFlyingJump = false
+	playerJumping = false
+	invulnerability = false
+	blockStarCol = false
+	counter = 0
+	points = 0
+	globaldx = 5
+	blockColor = 0
+	gameState = 1
 }
 
 func main() {

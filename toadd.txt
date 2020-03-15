@@ -1,8 +1,4 @@
-Change color of blocks when you change "stage"
+Change character color before game start. (Not possible without a menu system.)
 
-Improve models
 
-Change character color before game start.
-
-Add some way to gain additional points.
 
