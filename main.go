@@ -276,7 +276,6 @@ func update(screen *ebiten.Image) error {
 			player.y = 436
 			player.dx = 3
 			player.dy = 8
-			gameState = 0
 			ableToJump = true
 			blockPortalCol = false
 			isFlying = false
@@ -287,6 +286,7 @@ func update(screen *ebiten.Image) error {
 			points = 0
 			globaldx = 5
 			blockColor = 0
+			gameState = 0
 		}
 	}
 
@@ -342,6 +342,8 @@ func main() {
 	globaldx = 5
 
 	blockColor = 0
+
+	ebiten.SetVsyncEnabled(true)
 
 	if err := ebiten.Run(update, screenWidth, screenHeight, 1, "Game jam: Shapeshifting game"); err != nil {
 		log.Fatal(err)
